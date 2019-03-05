@@ -26,13 +26,20 @@ int main(void)
     max_init();
     max_test();
     max_delete();
-    max_write_house();
+
     
     for(;;)
     {   
-        //unsiged char i, k = 0;
-        /* Place your application code here. */
-        //for(i = 0; i < 41 ;
+        max_write_house();
+        CyDelay(1000);
+        max_write_down();
+        CyDelay(1000);
+        max_write_rigth();
+        CyDelay(1000);
+        max_write_left();
+        CyDelay(1000);
+        max_write_up();
+        CyDelay(1000);
     }
 }
 void test_borra_matriz_LED(void){

@@ -17,5 +17,9 @@ void max_test();
 void max_delete(void);
 
 void max_write_img(unsigned char img[]);
-void max_write_house();
+void max_write_house(void);
+void max_write_down(void);
+void max_write_rigth(void);
+void max_write_left(void);
+void max_write_up(void);
 /* [] END OF FILE */
