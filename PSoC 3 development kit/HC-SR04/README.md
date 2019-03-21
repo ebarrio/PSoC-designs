@@ -1,2 +1,4 @@
-![Screenshot](TopDesign.png)
+<center>
+![Screenshot](TopDesign.png) 
 ![Screenshot](WideResources.png)
+</center>
