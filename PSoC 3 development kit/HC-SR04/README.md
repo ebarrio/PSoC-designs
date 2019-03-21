@@ -1,2 +1,2 @@
-<div style="text-align:center">![Screenshot](TopDesign.png)</div>
+![Screenshot](TopDesign.png)
 ![Screenshot](WideResources.png)
