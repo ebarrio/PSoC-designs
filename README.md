@@ -3,4 +3,4 @@
 ### Telecommunication Electronics Degree
 #### University of Valencia
 Trabajo desarrollado por Eladio Barrio y Andrea Granell
-![Screanshoot](Out.jpeg)
+![Screanshoot](PSoC 3 development kit/MAX7219/Out.jpeg)
