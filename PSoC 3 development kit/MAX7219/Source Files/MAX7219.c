@@ -1,13 +1,13 @@
-/* ========================================
+/* ==============================================
  *
- * Copyright Eladio Barrio Querol
+ * Copyright Eladio Barrio Querol IFIC - UV 2019
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
  * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF Eladio Barrio.
+ * WHICH IS THE PROPERTY OF Eladio Barrio Querol.
  *
- * ========================================
+ * ==============================================
 */
 #include "MAX7219.h"
 
