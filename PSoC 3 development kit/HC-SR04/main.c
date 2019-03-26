@@ -1,25 +1,14 @@
-/********************************************************************************
-* File Name: main.c
-*
-* Version : 1.10
-*
-* Description: 
-*  This is a source code for example project of 16 bit Timer UDB Block.
-*
-* Test Result:
-*  Watch capture output on P0_0, tc output on P0_1, and Period, Compare and 
-*  Count value on LCD.
-*
-********************************************************************************
-* Copyright 2012-2017, Cypress Semiconductor Corporation. All rights reserved.
-* This software is owned by Cypress Semiconductor Corporation and is protected
-* by and subject to worldwide patent and copyright laws and treaties.
-* Therefore, you may use this software only as provided in the license agreement
-* accompanying the software package from which you obtained this software.
-* CYPRESS AND ITS SUPPLIERS MAKE NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-* WITH REGARD TO THIS SOFTWARE, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT,
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-*******************************************************************************/
+/* ==============================================
+ *
+ * Copyright Eladio Barrio Querol IFIC - UV 2019
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF Eladio Barrio Querol.
+ *
+ * ==============================================
+*/
 #include <project.h>
 #define HIGH 1u
 #define LOW 0u
