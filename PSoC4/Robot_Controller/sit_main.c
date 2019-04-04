@@ -10,7 +10,7 @@
  * ========================================
 */
 #include "sit_bluetooth_controller.h"
-
+uint8 robo_state_resolved = 0;
 uint8 robot_state = MOTOR_CONTROL;
 u8 * p_robot_state = NULL;
 uint8 InterruptCnt = 0;
@@ -28,8 +28,8 @@ CY_ISR(InterruptHandler)
     //Check BLE request
     CyBle_ProcessEvents();
     //Get state of BLE controller
-    p_robot_state = &robot_state;
-    get_robot_state(p_robot_state);
+    get_robot_state(&robot_state);
+    robo_state_resolved = 1;
 }
 
 int main(void)
@@ -50,24 +50,29 @@ int main(void)
     Timer_1_Start();
     
     for(;;)
-    {
+    {   if(robo_state_resolved){
         switch(robot_state) {
+            case SEQUENCE_MODE:
+            break;
             case MOTOR_CONTROL:
-            
+            roboparty();
             break;
             case LINE_FOLLOW:
             roboparty();
             break;
+            /* BLE Alert profile - Alert level = 0, 1 , 2
             case LED_DISPLAY:
             roboparty();
             break;
             case 4:
             roboparty();
-            break;
+            break;*/
             default:
             CyDelay(10);
             break;
         }
+        robo_state_resolved = 0;
+    }
     CySysPmSleep();
     }
 }

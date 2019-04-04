@@ -19,7 +19,7 @@ typedef unsigned int u32;
 typedef char s8;
 typedef short s16;
 typedef int s32;
-
+#define SEQUENCE_MODE 0
 #define MOTOR_CONTROL 1
 #define LINE_FOLLOW 2
 #define LED_DISPLAY 3

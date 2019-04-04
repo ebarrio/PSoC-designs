@@ -102,6 +102,7 @@ void RequestResolver(uint8 status)
 {
     /* Update Alert LED status based on IAS Alert level characteristic. */
         /* Place your application code here. */
+        //roboparty();
         switch(status) {
             case 0:
             r_state = 0;
