@@ -122,6 +122,7 @@ void state_BLE_controller(unsigned short state){
             RGB_B_Write(RGB_ON);
             break;
         case 1:
+	    //AZUL CLARO
             RGB_R_Write(RGB_OFF);
             RGB_G_Write(RGB_ON);
             RGB_B_Write(RGB_ON);
