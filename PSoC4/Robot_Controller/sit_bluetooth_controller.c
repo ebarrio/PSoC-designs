@@ -11,113 +11,118 @@
 */
 #include "sit_bluetooth_controller.h"
 
-uint8 r_state = 0;
-/*******************************************************************************
-* Function Name: StackEventHandler
-********************************************************************************
-*
-* Summary:
-*  This is an event callback function to receive events from the BLE Component.
-*
-* Parameters:  
-*  uint8 event:       Event from the CYBLE component
-*  void* eventParams: A structure instance for corresponding event type. The 
-*                     list of event structure is described in the component 
-*                     datasheet.
-*
-* Return: 
-*  None
-*
-*******************************************************************************/
-void StackEventHandler(uint32 event, void *eventParam)
+extern uint8 robo_state_resolved;
+//static CYBLE_API_RESULT_T apiResult;
+//static uint8 securityKey[16] = {0};
+uint8 deviceConnected = 0;
+uint32 j = 0;
+unsigned short state [STATES_NUM];
+/* All zeros passed as  argument passed to CyBle_GapRemoveDeviceFromWhiteList for 
+removing all the bonding data stored */
+CYBLE_GAP_BD_ADDR_T clearAllDevices = {{0,0,0,0,0,0},0};
+
+void CustomEventHandler(uint32 event, void * eventParam)
 {
-    uint8 alertLevel;
-    
+    /* Local variable to strore the write request parameters */
+	CYBLE_GATTS_WRITE_REQ_PARAM_T *wrReqParam;
+    //CYBLE_API_RESULT_T apiResult = CYBLE_ERROR_OK;
     switch(event)
-    {
-        /* Mandatory events to be handled by Find Me Target design */
+    {   
+
+        case CYBLE_EVT_GAP_DEVICE_CONNECTED:
+            rgb_amarillo();
+            //CyBle_GapAuthReq(cyBle_connHandle.bdHandle, &cyBle_authInfo); //PAIRING REQUEST
+            //CyBle_GapSetOobData(cyBle_connHandle.bdHandle, CYBLE_GAP_OOB_ENABLE, securityKey, NULL, NULL);
+        break;
         case CYBLE_EVT_STACK_ON:
         case CYBLE_EVT_GAP_DEVICE_DISCONNECTED:
-        case CYBLE_EVT_TIMEOUT:
-            /* Start the BLE fast advertisement. */
             CyBle_GappStartAdvertisement(CYBLE_ADVERTISING_FAST);
-            /* Reset the alert level to NOALERT */
-            alertLevel = NO_ALERT;
-            RequestResolver(alertLevel);
+            break;
+        //case CYBLE_EVT_GAP_AUTH_REQ:
+            
+        case CYBLE_EVT_GAPP_ADVERTISEMENT_START_STOP:
+            if(CYBLE_STATE_DISCONNECTED == CyBle_GetState()){
+                CyBle_GappStartAdvertisement(CYBLE_ADVERTISING_FAST);
+            }
+            //ROJO
+            /*RGB_RedLed_Write(RGB_ON);
+            RGB_G_Write(RGB_OFF);
+            RGB_B_Write(RGB_OFF);  */          
+            break;
+        case CYBLE_EVT_GATT_CONNECT_IND:
+            rgb_blanco();
+            deviceConnected = TRUE;
+            
+            break;
+        case CYBLE_EVT_GATT_DISCONNECT_IND:
+            rgb_rojo();
+            deviceConnected = FALSE;       
+            break;
+        case CYBLE_EVT_GATTS_WRITE_REQ:
+            rgb_azulclaro();
+             /* This event is received when Central device sends a Write command 
+             * on an Attribute. 
+             * We first get the attribute handle from the event parameter and 
+             * then try to match that handle with an attribute in the database.
+             */
+            wrReqParam = (CYBLE_GATTS_WRITE_REQ_PARAM_T *) eventParam;
+            /* This condition checks whether the RGB LED characteristic was
+             * written to by matching the attribute handle.
+             * If the attribute handle matches, then the value written to the 
+             * attribute is extracted and used to drive RGB LED.
+             */
+             /* Extract the attribute handle for the RGB LED characteristic 
+             * from the custom service data structure.
+             */
+            //Morado
+            /*
+            RGB_R_Write(RGB_ON);
+            RGB_G_Write(RGB_OFF);
+            RGB_B_Write(RGB_ON); 
+            */
+            /* if (attributeHandle == RGB LED Characteristic Handle) */
+            if(wrReqParam->handleValPair.attrHandle == cyBle_customs[CYBLE_ROBOT_SERVICE_SERVICE_INDEX].\
+								                        customServiceInfo[CYBLE_ROBOT_SERVICE_SERVICE_INDEX].\
+                                                        customServiceCharHandle)
+            {
+                
+                /* Extract the value of the attribute from the handle-value 
+                 * pair database. */
+                for (j = 0 ; j < STATES_NUM ; j++){
+                    state [j] = wrReqParam->handleValPair.value.val[j];
+                }
+                // AVISAMOS QUE HEMOS CAMBIADO EL STATE Y ESTA POR RESOLVER
+                robo_state_resolved = 0;
+                //CyBle_GattsWriteAttributeValue(
+                /* Update the PrISM components and the attribute for RGB LED read 
+                 * characteristics */
+                //state_BLE_test(state[0]);  
+            }
+			/* Send the response to the write request received. */
+			CyBle_GattsWriteRsp(cyBle_connHandle);
+			break;
+        default:
+
+       	 	break;            
+    }    
+}
+void get_robot_state(uint8 a []){
+    for (j = 0 ; j < STATES_NUM ; j++){
+        a[j] = state [j];
+    }
+}
+void state_BLE_test(unsigned short state){
+    switch(state){
+        case 0:
+            rgb_blanco();
+            CyDelay(200);
+            rgb_off();
+            break;
+        case 1:
+            rgb_azulclaro();
             break;
         default:
-    	    break;
+            rgb_amarillo();
+            break;           
     }
-}
-
-/*******************************************************************************
-* Function Name: IasEventHandler
-********************************************************************************
-*
-* Summary:
-*  This is an event callback function to receive events from the BLE Component,
-*  which are specific to Immediate Alert Service.
-*
-* Parameters:  
-*  uint8 event:       Write Command event from the CYBLE component.
-*  void* eventParams: A structure instance of CYBLE_GATT_HANDLE_VALUE_PAIR_T
-*                     type.
-*
-* Return: 
-*  None
-*
-*******************************************************************************/
-void IasEventHandler(uint32 event, void *eventParam)
-{
-    uint8 alertLevel;
-    
-    /* Alert Level Characteristic write event */
-    if(event == CYBLE_EVT_IASS_WRITE_CHAR_CMD)
-    {
-        /* Extract Alert Level value from the GATT DB using the 
-		 * CYBLE_IAS_ALERT_LEVEL as a parameter to CyBle_IassGetCharacteristicValue
-		 * routine. Store the Alert Level Characteristic value in "alertLevel"
-		 * variable */
-        CyBle_IassGetCharacteristicValue(CYBLE_IAS_ALERT_LEVEL, sizeof(alertLevel), &alertLevel);
-        /*Based on alert Level level recieved, Drive LED*/
-        RequestResolver(alertLevel);
-    }
-}
-
-/*******************************************************************************
-* Function Name: HandleAlertLEDs
-********************************************************************************
-*
-* Summary:
-*  This function drives the LED based on the alert level
-*
-* Parameters:  
-*  uint8 status:      Alert level 
-*
-* Return: 
-*  None
-*
-*******************************************************************************/
-void RequestResolver(uint8 status)
-{
-    /* Update Alert LED status based on IAS Alert level characteristic. */
-        /* Place your application code here. */
-        //roboparty();
-        switch(status) {
-            case 0:
-            r_state = 0;
-            break;
-            case 1:
-            r_state = 1;
-            break;
-            case 2:
-            r_state = 2;
-            break;
-            default:
-            break;
-        }
-    //Enter in sleep mode (CPU sleep, hardware (timmer interrupt) active)
-}
-void get_robot_state(uint8 * a){
-    *a = r_state;
 }

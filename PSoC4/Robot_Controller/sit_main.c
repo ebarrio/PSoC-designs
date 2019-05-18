@@ -10,10 +10,12 @@
  * ========================================
 */
 #include "sit_bluetooth_controller.h"
-uint8 robo_state_resolved = 0;
-uint8 robot_state = MOTOR_CONTROL;
-u8 * p_robot_state = NULL;
-uint8 InterruptCnt = 0;
+
+uint8 robo_state_resolved = 1;
+uint8 robot_state[STATES_NUM];
+//u8 * p_robot_state = NULL;
+uint32 count_10us = 0;
+uint8 i = 0;
 /*******************************************************************************
 * Define Interrupt service routine and allocate an vector to the Interrupt
 * Launched 
@@ -25,55 +27,88 @@ CY_ISR(InterruptHandler)
 	 * the status is read directly.
 	 */
    	Timer_1_STATUS;
+    count_10us++;
     //Check BLE request
     CyBle_ProcessEvents();
-    //Get state of BLE controller
-    get_robot_state(&robot_state);
-    robo_state_resolved = 1;
 }
 
 int main(void)
-{   
+{       
     CyGlobalIntEnable; /* Enable global interrupts. */
-    /* Place your initialization/startup code here (e.g. MyInst_Start()) */
-    
     /* Start the BLE component and register StackEventHandler function */
-    CyBle_Start(StackEventHandler);
-    
-    /* Register IAS event handler function */
-    CyBle_IasRegisterAttrCallback(IasEventHandler);
-    
+    CyBle_Start(CustomEventHandler); 
     /* Enable the Interrupt component connected to Timer interrupt */
     TimerISR_StartEx(InterruptHandler);
-
 	/* Start the components */
     Timer_1_Start();
-    
-    for(;;)
-    {   if(robo_state_resolved){
-        switch(robot_state) {
-            case SEQUENCE_MODE:
-            break;
-            case MOTOR_CONTROL:
-            roboparty();
-            break;
-            case LINE_FOLLOW:
-            roboparty();
-            break;
-            /* BLE Alert profile - Alert level = 0, 1 , 2
-            case LED_DISPLAY:
-            roboparty();
-            break;
-            case 4:
-            roboparty();
-            break;*/
-            default:
-            CyDelay(10);
-            break;
+    PWM_1_Start();
+    PWM_2_Start();
+    motor_inicializar();
+    max_init();
+    max_delete();
+    max_write_happy();
+
+    for(;;){
+        if(robo_state_resolved == 0){
+            //Get state of BLE controller
+            get_robot_state(robot_state);
+            
+            for(i = 0; i < STATES_NUM  ; i++){
+                switch(robot_state[i]) {
+                    case SLEEP_ROBOT:;
+                        break;
+                    case AVANZAR:
+                        rgb_amarillo();
+                        robot_avanzar();
+                        break;
+                    case RETROCEDER:
+                        rgb_verde();
+                        robot_retroceder();
+                        break;
+                    case GIRAR_IZQUIERDA:
+                        rgb_azulclaro();
+                        robot_girar_izquierda();
+                        break;
+                    case GIRAR_DERECHA:
+                        rgb_azuloscuro();
+                        robot_girar_derecha();
+                        break;
+                    case LDR_DRIVE:
+                        robot_ldr_control();
+                        break;
+                    case BUZZER_IMPERIAL_MARCH:
+                        max_write_jedi_logo();
+                        buzzer_ImperialMarch();
+                        max_write_happy();
+                        break;
+                    case SENSAR_DISTANCIA:
+                        robot_avanza_sens_dist();
+                        break;
+                    case CUENTA_ATRAS:
+                        robot_cuenta_atras();
+                        break;
+                    case SEGUIDOR:
+                        robot_seguidor();
+                        break;
+                    case DETECTOR_LINEA:
+                        robot_detector_lineas();
+                        break;
+                    case HARDWARE_DELAY:
+                        rgb_blanco();
+                        CyDelay(1000);
+                        robot_test_hardware_delay();
+                        break;
+                    case ACELERACION_PROGRESIVA:
+                        robot_aceleracion_progresiva(3);
+                    default:
+                        rgb_azuloscuro();
+                        break;
+                }
+            }
+            //max_write_house();
+            robo_state_resolved = 1;
         }
-        robo_state_resolved = 0;
-    }
-    CySysPmSleep();
+        CySysPmSleep();
     }
 }
 
