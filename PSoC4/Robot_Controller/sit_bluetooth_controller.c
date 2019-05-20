@@ -1,15 +1,23 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright Eladioy Andrea, 2019
  * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * GPL SOFTWARE.
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * PROPERTY OF UV - Eladio Barrio and Andrea Granell.
  *
  * ========================================
 */
+
+/***************************************
+*             Include
+***************************************/
+
 #include "sit_bluetooth_controller.h"
+
+/***************************************
+*            Global variables
+***************************************/
 
 extern uint8 robo_state_resolved;
 //static CYBLE_API_RESULT_T apiResult;
@@ -21,6 +29,10 @@ unsigned short state [STATES_NUM];
 removing all the bonding data stored */
 CYBLE_GAP_BD_ADDR_T clearAllDevices = {{0,0,0,0,0,0},0};
 
+/*******************************************************************************
+* CustomEventHandler: Procesa los eventos BLE.
+********************************************************************************/
+
 void CustomEventHandler(uint32 event, void * eventParam)
 {
     /* Local variable to strore the write request parameters */
@@ -31,6 +43,7 @@ void CustomEventHandler(uint32 event, void * eventParam)
 
         case CYBLE_EVT_GAP_DEVICE_CONNECTED:
             rgb_amarillo();
+            // Para emparejamiento con dispositivos moviles:
             //CyBle_GapAuthReq(cyBle_connHandle.bdHandle, &cyBle_authInfo); //PAIRING REQUEST
             //CyBle_GapSetOobData(cyBle_connHandle.bdHandle, CYBLE_GAP_OOB_ENABLE, securityKey, NULL, NULL);
         break;
@@ -38,16 +51,10 @@ void CustomEventHandler(uint32 event, void * eventParam)
         case CYBLE_EVT_GAP_DEVICE_DISCONNECTED:
             CyBle_GappStartAdvertisement(CYBLE_ADVERTISING_FAST);
             break;
-        //case CYBLE_EVT_GAP_AUTH_REQ:
-            
         case CYBLE_EVT_GAPP_ADVERTISEMENT_START_STOP:
             if(CYBLE_STATE_DISCONNECTED == CyBle_GetState()){
                 CyBle_GappStartAdvertisement(CYBLE_ADVERTISING_FAST);
-            }
-            //ROJO
-            /*RGB_RedLed_Write(RGB_ON);
-            RGB_G_Write(RGB_OFF);
-            RGB_B_Write(RGB_OFF);  */          
+            }        
             break;
         case CYBLE_EVT_GATT_CONNECT_IND:
             rgb_blanco();
@@ -66,37 +73,18 @@ void CustomEventHandler(uint32 event, void * eventParam)
              * then try to match that handle with an attribute in the database.
              */
             wrReqParam = (CYBLE_GATTS_WRITE_REQ_PARAM_T *) eventParam;
-            /* This condition checks whether the RGB LED characteristic was
-             * written to by matching the attribute handle.
-             * If the attribute handle matches, then the value written to the 
-             * attribute is extracted and used to drive RGB LED.
-             */
-             /* Extract the attribute handle for the RGB LED characteristic 
-             * from the custom service data structure.
-             */
-            //Morado
-            /*
-            RGB_R_Write(RGB_ON);
-            RGB_G_Write(RGB_OFF);
-            RGB_B_Write(RGB_ON); 
-            */
-            /* if (attributeHandle == RGB LED Characteristic Handle) */
             if(wrReqParam->handleValPair.attrHandle == cyBle_customs[CYBLE_ROBOT_SERVICE_SERVICE_INDEX].\
 								                        customServiceInfo[CYBLE_ROBOT_SERVICE_SERVICE_INDEX].\
                                                         customServiceCharHandle)
             {
                 
-                /* Extract the value of the attribute from the handle-value 
+                /* Extract the value (state) of the attribute from the handle-value 
                  * pair database. */
                 for (j = 0 ; j < STATES_NUM ; j++){
-                    state [j] = wrReqParam->handleValPair.value.val[j];
+                    state [j] = wrReqParam->handleValPair.value.val[j]; 
                 }
-                // AVISAMOS QUE HEMOS CAMBIADO EL STATE Y ESTA POR RESOLVER
-                robo_state_resolved = 0;
-                //CyBle_GattsWriteAttributeValue(
-                /* Update the PrISM components and the attribute for RGB LED read 
-                 * characteristics */
-                //state_BLE_test(state[0]);  
+                // Flag estado sin resolver
+                robo_state_resolved = 0; 
             }
 			/* Send the response to the write request received. */
 			CyBle_GattsWriteRsp(cyBle_connHandle);
@@ -106,11 +94,23 @@ void CustomEventHandler(uint32 event, void * eventParam)
        	 	break;            
     }    
 }
+
+/*******************************************************************************
+* get_robot_state: Modifica vector recivido para escribir los estados BLE.
+*                  El programa principal utiliza la funcion cuando tiene
+*                  estados por resolver.
+********************************************************************************/
+
 void get_robot_state(uint8 a []){
     for (j = 0 ; j < STATES_NUM ; j++){
         a[j] = state [j];
     }
 }
+
+/*******************************************************************************
+* state_BLE_test: Utilizada durante las pruebas del BLE.
+********************************************************************************/
+
 void state_BLE_test(unsigned short state){
     switch(state){
         case 0:

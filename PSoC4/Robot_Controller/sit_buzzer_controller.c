@@ -1,19 +1,30 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright Eladioy Andrea, 2019
  * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * GPL SOFTWARE.
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * PROPERTY OF UV - Eladio Barrio and Andrea Granell.
  *
  * ========================================
 */
+
+/***************************************
+*             Include
+***************************************/
+
 #include "sit_buzzer_controller.h"
+
+/***************************************
+*            Global variables
+***************************************/
 
 extern uint32 count_10us;
 uint32 counts_init = 0;
 
+/*******************************************************************************
+* buzzer_MI: Reproduce tono de unico pulso con la frecuencia MI.
+********************************************************************************/
 
 void buzzer_MI(){
     counts_init = count_10us;
@@ -26,6 +37,11 @@ void buzzer_MI(){
     BUZZER_Write(0u);
     while((count_10us - counts_init) < (COUNTS_MI/2));
 }
+
+/*******************************************************************************
+* buzzer_SOL: Reproduce tono de unico pulso con la frecuencia SOL.
+********************************************************************************/
+
 void buzzer_SOL(){
     counts_init = count_10us;
     //CHECK COUNTS BEFORE
@@ -37,6 +53,11 @@ void buzzer_SOL(){
     BUZZER_Write(0u);
     while((count_10us - counts_init) < (COUNTS_SOL/2));
 }
+
+/*******************************************************************************
+* buzzer_DO: Reproduce tono de unico pulso con la frecuencia DO.
+********************************************************************************/
+
 void buzzer_DO(){
     counts_init = count_10us;
     //CHECK COUNTS BEFORE
@@ -49,6 +70,10 @@ void buzzer_DO(){
     while((count_10us - counts_init) < (COUNTS_DO/2));
 }
 
+/*******************************************************************************
+* buzzer_DOs: Reproduce tono de unico pulso con la frecuencia DO sostenido.
+********************************************************************************/
+
 void buzzer_DOs(){
     counts_init = count_10us;
     //CHECK COUNTS BEFORE
@@ -60,6 +85,11 @@ void buzzer_DOs(){
     BUZZER_Write(0u);
     while((count_10us - counts_init) < (COUNTS_DOs/2));
 }
+
+/*******************************************************************************
+* buzzer_SI: Reproduce tono de unico pulso con la frecuencia SI.
+********************************************************************************/
+
 void buzzer_SI(){
     counts_init = count_10us;
     //CHECK COUNTS BEFORE
@@ -71,6 +101,11 @@ void buzzer_SI(){
     BUZZER_Write(0u);
     while((count_10us - counts_init) < (COUNTS_SI/2));
 }
+
+/*******************************************************************************
+* buzzer_ImperialMarch: Reproduce melodia de la marcha imperial.
+********************************************************************************/
+
 void buzzer_ImperialMarch(){
     uint32 k = 0;
     uint32 j = 0;

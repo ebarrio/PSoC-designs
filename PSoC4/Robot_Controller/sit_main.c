@@ -1,49 +1,55 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright Eladioy Andrea, 2019
  * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * GPL SOFTWARE.
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * PROPERTY OF UV - Eladio Barrio and Andrea Granell.
  *
  * ========================================
 */
+
+/***************************************
+*             Include
+***************************************/
+
 #include "sit_bluetooth_controller.h"
+
+/***************************************
+*            Global variables
+***************************************/
 
 uint8 robo_state_resolved = 1;
 uint8 robot_state[STATES_NUM];
-//u8 * p_robot_state = NULL;
 uint32 count_10us = 0;
 uint8 i = 0;
+
 /*******************************************************************************
-* Define Interrupt service routine and allocate an vector to the Interrupt
-* Launched 
+* Rutina de interrupción
 ********************************************************************************/
+
 CY_ISR(InterruptHandler)
 {
-	/* Read Status register in order to clear the sticky Terminal Count (TC) bit 
-	 * in the status register. Note that the function is not called, but rather 
-	 * the status is read directly.
-	 */
+	// Clear TC
    	Timer_1_STATUS;
     count_10us++;
     //Check BLE request
     CyBle_ProcessEvents();
 }
 
+/*******************************************************************************
+* Programa principal
+********************************************************************************/
+
 int main(void)
-{       
-    CyGlobalIntEnable; /* Enable global interrupts. */
-    /* Start the BLE component and register StackEventHandler function */
+{   
+    /* Inicialización componentes*/
+    CyGlobalIntEnable;
     CyBle_Start(CustomEventHandler); 
-    /* Enable the Interrupt component connected to Timer interrupt */
     TimerISR_StartEx(InterruptHandler);
-	/* Start the components */
     Timer_1_Start();
     PWM_1_Start();
     PWM_2_Start();
-    motor_inicializar();
     max_init();
     max_delete();
     max_write_happy();
@@ -84,8 +90,8 @@ int main(void)
                     case SENSAR_DISTANCIA:
                         robot_avanza_sens_dist();
                         break;
-                    case CUENTA_ATRAS:
-                        robot_cuenta_atras();
+                    case REPRESENTACION_DISTANCIA:
+                        robot_rep_dist();
                         break;
                     case SEGUIDOR:
                         robot_seguidor();
@@ -93,10 +99,8 @@ int main(void)
                     case DETECTOR_LINEA:
                         robot_detector_lineas();
                         break;
-                    case HARDWARE_DELAY:
-                        rgb_blanco();
-                        CyDelay(1000);
-                        robot_test_hardware_delay();
+                    case RGB_TEST:
+                        roboparty();
                         break;
                     case ACELERACION_PROGRESIVA:
                         robot_aceleracion_progresiva(3);
@@ -105,11 +109,9 @@ int main(void)
                         break;
                 }
             }
-            //max_write_house();
             robo_state_resolved = 1;
         }
         CySysPmSleep();
     }
 }
-
 /* [] END OF FILE */

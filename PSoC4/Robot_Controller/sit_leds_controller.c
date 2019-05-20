@@ -1,15 +1,24 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright Eladioy Andrea, 2019
  * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * GPL SOFTWARE.
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * PROPERTY OF UV - Eladio Barrio and Andrea Granell.
  *
  * ========================================
 */
+
+/***************************************
+*             Include
+***************************************/
+
 #include "sit_leds_controller.h"
+
+/*******************************************************************************
+* roboparty: Barrido RGB.
+********************************************************************************/
+
 void roboparty(){
     RGB_BlueLed_Write(RGB_ON);
     RGB_RedLed_Write(RGB_ON);
@@ -43,13 +52,22 @@ void roboparty(){
     RGB_RedLed_Write(RGB_OFF);
     RGB_GreenLed_Write(RGB_OFF);
 }
+
+/*******************************************************************************
+* rgb_off: apaga RGB.
+********************************************************************************/
+
 void rgb_off(){
     RGB_RedLed_Write(RGB_OFF);
     RGB_GreenLed_Write(RGB_OFF);
     RGB_BlueLed_Write(RGB_OFF);
 }
+
+/*******************************************************************************
+* rgb_color: enciende RGB del color correspondiente.
+********************************************************************************/
+
 void rgb_blanco(){
-    //BLANCO
     RGB_RedLed_Write(RGB_ON);
     RGB_GreenLed_Write(RGB_ON);
     RGB_BlueLed_Write(RGB_ON);
@@ -70,17 +88,20 @@ void rgb_azuloscuro(){
     RGB_BlueLed_Write(RGB_ON); 
 }
 void rgb_azulclaro(){
-    //AZUL CLARO
     RGB_RedLed_Write(RGB_OFF);
     RGB_GreenLed_Write(RGB_ON);
     RGB_BlueLed_Write(RGB_ON);
 }
 void rgb_amarillo(){
-    //AMARILLO
     RGB_RedLed_Write(RGB_ON);
     RGB_GreenLed_Write(RGB_ON);
     RGB_BlueLed_Write(RGB_OFF);
 }
+
+/*******************************************************************************
+* max_init: Configura registros MAX mediante SPI.
+********************************************************************************/
+
 void max_init(){
     SPIM_1_Start();
     CyDelay(1);
@@ -97,6 +118,11 @@ void max_init(){
     SPIM_1_WriteTxData(0x0A02);
     CyDelay(1);
 }
+
+/*******************************************************************************
+* max_test: Utilizada para testear la matriz led.
+********************************************************************************/
+
 void max_test(void){
 // test on
     SPIM_1_WriteTxData(0x0F01);
@@ -105,6 +131,11 @@ void max_test(void){
     SPIM_1_WriteTxData(0x0F00);
     CyDelay(1);
 }
+
+/*******************************************************************************
+* max_delete: Apaga LED matriz.
+********************************************************************************/
+
 void max_delete(void){
     unsigned char i;
     for ( i = 1; i < 9; i ++){
@@ -112,6 +143,11 @@ void max_delete(void){
         CyDelay(1);
     }
 }
+
+/****************************************************************************************
+* max_delete: escribe vector con 8 posiciones de 1byte en los registros de representcion
+****************************************************************************************/
+
 void max_write_img(unsigned char img[]){
     unsigned char i;
     for ( i = 0; i < 8; i ++){
@@ -119,6 +155,11 @@ void max_write_img(unsigned char img[]){
         CyDelay(1);
     }
 }
+
+/****************************************************************************************
+* max_write_x: Representa figura X en la matriz LED
+****************************************************************************************/
+
 void max_write_house(void){
     unsigned char img_1 [8] = {0x10,0x3f,0x40,0xb7,0xb7,0x40,0x3f,0x10};
     max_write_img(img_1);
