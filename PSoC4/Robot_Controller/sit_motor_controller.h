@@ -1,14 +1,26 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright Eladioy Andrea, 2019
  * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * GPL SOFTWARE.
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
+ * PROPERTY OF UV - Eladio Barrio and Andrea Granell.
  * ========================================
 */
+
+/***************************************
+*             Includes
+***************************************/
+
 #include "project.h"
-void motor_request(uint8);
+
+/***************************************
+*        Function Prototypes
+***************************************/
+void cambio_directo_marcha_atras();
+void cambio_directo_marcha_adelante();
+void frenar_direccion();
+void giro_derecha();
+void giro_izquierda();
+
 /* [] END OF FILE */
